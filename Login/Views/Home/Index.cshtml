@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div id="loginInfo">
+<h1>Login</h1>
+
+<form id="loginForm">
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username">
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+    </div>
+    <button type="button" id="loginButton">Login</button>
+</form>
+</div>
+
+<div id="userInfo" style="display: none;">
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('loginButton').addEventListener('click', function () {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            authenticate(username, password);
+        });
+
+        function authenticate(username, password) {
+            // Send username and password to server for authentication
+            fetch('/Home/Authenticate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username, password: password })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.success) {
+                        document.getElementById('loginInfo').style.display = 'none';
+                        document.getElementById('userInfo').innerHTML = data.userdata;
+                        document.getElementById('userInfo').style.display = 'block';
+                    } else {
+                        alert('Invalid username or password. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+}
